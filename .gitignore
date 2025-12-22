@@ -1,3 +1,4 @@
 *.out
 .prettierrc
 .clang-format
+tests
