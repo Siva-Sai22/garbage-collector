@@ -37,7 +37,8 @@ void stack_push(stack_t *stack, void *obj) {
     if (stack->count == stack->capacity) {
         stack->capacity *= 2;
 
-        void **new_data = realloc(stack->data, sizeof(void *) * stack->capacity);
+        void **new_data =
+            realloc(stack->data, sizeof(void *) * stack->capacity);
         if (new_data == NULL) {
             // Memory allocation failed;
             stack->capacity /= 2;
