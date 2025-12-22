@@ -6,6 +6,10 @@ typedef struct oxy_object oxy_object_t;
 
 int oxy_length(oxy_object_t *obj);
 oxy_object_t *oxy_add(oxy_object_t *a, oxy_object_t *b);
+oxy_object_t *_new_oxy_objec();
+void refcount_inc(oxy_object_t *obj);
+void refcount_dec(oxy_object_t *obj);
+void refcount_free(oxy_object_t *obj);
 
 // Datatypes in oxy
 typedef enum oxy_object_kind {
@@ -41,6 +45,7 @@ typedef union oxy_object_data {
 typedef struct oxy_object {
     oxy_object_kind_t kind;
     oxy_object_data_t data;
+    int refcount;
 } oxy_object_t;
 
 oxy_object_t *new_oxy_integer(int value);

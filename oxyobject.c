@@ -3,6 +3,62 @@
 #include "string.h"
 #include <sys/types.h>
 
+void refcount_inc(oxy_object_t *obj) {
+    if (obj == NULL)
+        return;
+
+    obj->refcount += 1;
+}
+
+void refcount_dec(oxy_object_t *obj) {
+    if (obj == NULL)
+        return;
+
+    obj->refcount -= 1;
+    if (obj->refcount == 0)
+        refcount_free(obj);
+}
+
+void refcount_free(oxy_object_t *obj) {
+    switch (obj->kind) {
+    case INTEGER:
+    case FLOAT:
+        break;
+    case STRING:
+        free(obj->data.v_string);
+        break;
+    case VECTOR3: {
+        oxy_vector_t vec = obj->data.v_vector3;
+        refcount_dec(vec.x);
+        refcount_dec(vec.y);
+        refcount_dec(vec.z);
+        break;
+    }
+    case ARRAY: {
+        oxy_array_t arr = obj->data.v_array;
+        for(int i=0; i<arr.size; i++) {
+            refcount_dec(arr.elements[i]);
+        }
+        break;
+    }
+    default:
+        return;
+    }
+
+    free(obj);
+}
+
+oxy_object_t *_new_oxy_object() {
+    oxy_object_t *obj = malloc(sizeof(oxy_object_t));
+    if (obj == NULL) {
+        // Memory allocation failed;
+        return NULL;
+    }
+
+    obj->refcount = 1;
+    return obj;
+}
+
 int oxy_length(oxy_object_t *obj) {
     switch (obj->kind) {
     case INTEGER:
@@ -63,32 +119,33 @@ oxy_object_t *oxy_add(oxy_object_t *a, oxy_object_t *b) {
             new_oxy_vector3(oxy_add(a->data.v_vector3.x, b->data.v_vector3.x),
                             oxy_add(a->data.v_vector3.y, b->data.v_vector3.y),
                             oxy_add(a->data.v_vector3.z, b->data.v_vector3.z));
-            
+
         return obj;
     }
-    
-    if(a->kind == ARRAY) {
-        if(b->kind != ARRAY) return NULL;
-        
+
+    if (a->kind == ARRAY) {
+        if (b->kind != ARRAY)
+            return NULL;
+
         int len_a = oxy_length(a), len_b = oxy_length(b);
-        int tot_len = len_a+len_b;
+        int tot_len = len_a + len_b;
         oxy_object_t *obj = new_oxy_array(tot_len);
-        
-        for(int i=0; i<len_a; i++) {
+
+        for (int i = 0; i < len_a; i++) {
             oxy_array_set(obj, i, oxy_array_get(a, i));
         }
-        for(int i=0; i<len_b; i++) {
-            oxy_array_set(obj, i+len_a, oxy_array_get(b, i));
+        for (int i = 0; i < len_b; i++) {
+            oxy_array_set(obj, i + len_a, oxy_array_get(b, i));
         }
-        
+
         return obj;
     }
-    
+
     return NULL;
 }
 
 oxy_object_t *new_oxy_integer(int value) {
-    oxy_object_t *obj = (oxy_object_t *)malloc(sizeof(oxy_object_t));
+    oxy_object_t *obj = _new_oxy_object();
     if (obj == NULL) {
         // Memory allocation failed;
         return NULL;
@@ -101,7 +158,7 @@ oxy_object_t *new_oxy_integer(int value) {
 }
 
 oxy_object_t *new_oxy_float(float value) {
-    oxy_object_t *obj = (oxy_object_t *)malloc(sizeof(oxy_object_t));
+    oxy_object_t *obj = _new_oxy_object();
     if (obj == NULL) {
         // Memory allocation failed;
         return NULL;
@@ -114,7 +171,7 @@ oxy_object_t *new_oxy_float(float value) {
 }
 
 oxy_object_t *new_oxy_string(char *value) {
-    oxy_object_t *obj = (oxy_object_t *)malloc(sizeof(oxy_object_t));
+    oxy_object_t *obj = _new_oxy_object();
     if (obj == NULL) {
         // Memory allocation failed;
         return NULL;
@@ -140,7 +197,7 @@ oxy_object_t *new_oxy_vector3(oxy_object_t *x, oxy_object_t *y,
     if (x == NULL || y == NULL || z == NULL) {
         return NULL;
     }
-    oxy_object_t *obj = (oxy_object_t *)malloc(sizeof(oxy_object_t));
+    oxy_object_t *obj = _new_oxy_object();
     if (obj == NULL) {
         // Memory allocation failed;
         return NULL;
@@ -150,11 +207,13 @@ oxy_object_t *new_oxy_vector3(oxy_object_t *x, oxy_object_t *y,
     oxy_vector_t vec = {.x = x, .y = y, .z = z};
     obj->data.v_vector3 = vec;
 
+    refcount_inc(x), refcount_inc(y), refcount_inc(z);
+
     return obj;
 }
 
 oxy_object_t *new_oxy_array(size_t size) {
-    oxy_object_t *obj = (oxy_object_t *)malloc(sizeof(oxy_object_t));
+    oxy_object_t *obj = _new_oxy_object();
     if (obj == NULL) {
         // Memory allocation failed;
         return NULL;
@@ -178,16 +237,18 @@ bool oxy_array_set(oxy_object_t *obj, size_t index, oxy_object_t *value) {
     if (obj == NULL || value == NULL) {
         return false;
     }
-
     if (obj->kind != ARRAY) {
         return false;
     }
-
     if (index >= obj->data.v_array.size) {
         return false;
     }
-
-    obj->data.v_array.elements[index] = value;
+    
+    oxy_object_t **arr = obj->data.v_array.elements;
+    refcount_dec(arr[index]);
+    arr[index] = value;
+    refcount_inc(arr[index]);
+    
     return true;
 }
 
@@ -195,10 +256,8 @@ oxy_object_t *oxy_array_get(oxy_object_t *obj, size_t index) {
     if (obj == NULL || obj->kind != ARRAY) {
         return NULL;
     }
-
     if (index >= obj->data.v_array.size) {
         return NULL;
     }
-
     return obj->data.v_array.elements[index];
 }
