@@ -6,10 +6,7 @@ typedef struct oxy_object oxy_object_t;
 
 int oxy_length(oxy_object_t *obj);
 oxy_object_t *oxy_add(oxy_object_t *a, oxy_object_t *b);
-oxy_object_t *_new_oxy_objec();
-void refcount_inc(oxy_object_t *obj);
-void refcount_dec(oxy_object_t *obj);
-void refcount_free(oxy_object_t *obj);
+oxy_object_t *_new_oxy_object();
 
 // Datatypes in oxy
 typedef enum oxy_object_kind {
@@ -54,5 +51,10 @@ oxy_object_t *new_oxy_string(char *value);
 oxy_object_t *new_oxy_vector3(oxy_object_t *x, oxy_object_t *y,
                               oxy_object_t *z);
 oxy_object_t *new_oxy_array(size_t size);
+
+void refcount_inc(oxy_object_t *obj);
+void refcount_dec(oxy_object_t *obj);
+void refcount_free(oxy_object_t *obj);
+
 bool oxy_array_set(oxy_object_t *arr, size_t index, oxy_object_t *value);
 oxy_object_t *oxy_array_get(oxy_object_t *arr, size_t index);

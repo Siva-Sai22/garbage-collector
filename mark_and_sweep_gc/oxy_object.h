@@ -1,0 +1,41 @@
+#include "stdbool.h"
+#include "stddef.h"
+
+// Forward declaration
+typedef struct oxy_object oxy_object_t;
+
+// Datatypes in oxy
+typedef enum oxy_object_kind {
+    INTEGER,
+    FLOAT,
+    STRING,
+    VECTOR3,
+    ARRAY
+} oxy_object_kind_t;
+
+// Dynamic array
+typedef struct oxy_array {
+    size_t size;
+    oxy_object_t **elements;
+} oxy_array_t;
+
+// Kind of tuple
+typedef struct oxy_vector {
+    oxy_object_t *x;
+    oxy_object_t *y;
+    oxy_object_t *z;
+} oxy_vector_t;
+
+typedef union oxy_object_data {
+    int v_int;
+    float v_float;
+    char *v_string;
+    oxy_vector_t v_vector3;
+    oxy_array_t v_array;
+} oxy_object_data_t;
+
+// Basic object of the oxy
+typedef struct oxy_object {
+    oxy_object_kind_t kind;
+    oxy_object_data_t data;
+} oxy_object_t;

@@ -1,7 +1,6 @@
 #include "oxyobject.h"
 #include "stdlib.h"
 #include "string.h"
-#include <sys/types.h>
 
 void refcount_inc(oxy_object_t *obj) {
     if (obj == NULL)
