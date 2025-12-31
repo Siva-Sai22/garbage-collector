@@ -1,3 +1,4 @@
+#include "oxy_object.h"
 #include "oxy_utils.h"
 #include "stdlib.h"
 #include "string.h"
@@ -12,6 +13,24 @@ oxy_object_t *_new_oxy_object(vm_t *vm) {
     vm_track_object(vm, obj);
 
     return obj;
+}
+
+void oxy_object_free(oxy_object_t *obj) {
+    switch (obj->kind) {
+    case INTEGER:
+    case FLOAT:
+        break;
+    case STRING:
+        free(obj->data.v_string);
+        break;
+    case VECTOR3:
+        break;
+    case ARRAY:
+        free(obj->data.v_array.elements);
+        break;
+    }
+
+    free(obj);
 }
 
 int oxy_length(oxy_object_t *obj) {

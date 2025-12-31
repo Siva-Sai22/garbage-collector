@@ -38,6 +38,7 @@ void refcount_free(oxy_object_t *obj) {
         for(int i=0; i<arr.size; i++) {
             refcount_dec(arr.elements[i]);
         }
+        free(arr.elements);
         break;
     }
     default:

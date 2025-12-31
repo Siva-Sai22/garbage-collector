@@ -1,7 +1,7 @@
 #include <stddef.h>
 
 typedef struct Stack {
-    size_t count;
+    size_t size;
     size_t capacity;
     void **data;
 } stack_t;

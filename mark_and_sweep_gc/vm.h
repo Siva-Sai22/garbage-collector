@@ -1,3 +1,6 @@
+#ifndef vm_h
+#define vm_h
+
 #include "../stack/stack.h"
 #include "oxy_object.h"
 
@@ -8,6 +11,7 @@ typedef struct VirtualMachine {
     stack_t *objects;
 } vm_t;
 
+// Each object in frames is a stack of these frame_t (object references)
 typedef struct StackFrame {
     // Object references in a frame
     stack_t *references;
@@ -21,3 +25,5 @@ void vm_frame_push(vm_t *vm, frame_t *frame);
 frame_t *vm_new_frame(vm_t *vm);
 
 void frame_free(frame_t *frame);
+
+#endif

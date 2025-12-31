@@ -1,3 +1,6 @@
+#ifndef oxy_object_h
+#define oxy_object_h
+
 #include "stdbool.h"
 #include "stddef.h"
 
@@ -39,3 +42,5 @@ typedef struct oxy_object {
     oxy_object_kind_t kind;
     oxy_object_data_t data;
 } oxy_object_t;
+
+#endif

@@ -16,7 +16,7 @@ stack_t *stack_new(size_t capacity) {
         return NULL;
     }
 
-    stack->count = 0;
+    stack->size = 0;
     stack->capacity = capacity;
 
     stack->data = malloc(capacity * sizeof(void *));
@@ -34,7 +34,7 @@ void stack_push(stack_t *stack, void *obj) {
         return;
     }
 
-    if (stack->count == stack->capacity) {
+    if (stack->size == stack->capacity) {
         stack->capacity *= 2;
 
         void **new_data =
@@ -47,8 +47,8 @@ void stack_push(stack_t *stack, void *obj) {
         stack->data = new_data;
     }
 
-    stack->data[stack->count] = obj;
-    stack->count++;
+    stack->data[stack->size] = obj;
+    stack->size++;
 }
 
 void *stack_pop(stack_t *stack) {
@@ -56,6 +56,6 @@ void *stack_pop(stack_t *stack) {
         return NULL;
     }
 
-    stack->count--;
-    return stack->data[stack->count];
+    stack->size--;
+    return stack->data[stack->size];
 }
