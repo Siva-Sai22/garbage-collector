@@ -41,6 +41,7 @@ typedef union oxy_object_data {
 typedef struct oxy_object {
     oxy_object_kind_t kind;
     oxy_object_data_t data;
+    bool is_marked;
 } oxy_object_t;
 
 #endif

@@ -9,6 +9,22 @@ void stack_free(stack_t *stack) {
     free(stack);
 }
 
+void stack_free_nulls(stack_t *stack) {
+    size_t new_size = 0;
+    
+    for(int i=0; i<stack->size; i++) {
+        if(stack->data[i] != NULL) {
+            stack->data[new_size++] = stack->data[i];
+        }
+    }
+    
+    stack->size = new_size;
+    
+    for(int i=new_size; i<stack->capacity; i++) {
+        stack->data[i] = NULL;
+    }
+}
+
 stack_t *stack_new(size_t capacity) {
     stack_t *stack = (stack_t *)malloc(sizeof(stack_t));
     if (stack == NULL) {

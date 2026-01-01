@@ -9,7 +9,8 @@ oxy_object_t *_new_oxy_object(vm_t *vm) {
         // Memory allocation failed;
         return NULL;
     }
-
+    
+    obj->is_marked = false;
     vm_track_object(vm, obj);
 
     return obj;
