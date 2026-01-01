@@ -16,7 +16,7 @@ void mark(vm_t *vm) {
         frame_t *frame = frames->data[i];
         stack_t *references = frame->references;
         for (int j = 0; j < references->size; j++) {
-            oxy_object_t *obj = references->data[i];
+            oxy_object_t *obj = references->data[j];
             obj->is_marked = true;
         }
     }

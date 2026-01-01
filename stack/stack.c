@@ -9,7 +9,7 @@ void stack_free(stack_t *stack) {
     free(stack);
 }
 
-void stack_free_nulls(stack_t *stack) {
+void stack_remove_nulls(stack_t *stack) {
     size_t new_size = 0;
     
     for(int i=0; i<stack->size; i++) {
