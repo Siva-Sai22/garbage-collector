@@ -1,17 +1,5 @@
-CC = gcc
-# -std=c11 forces the compiler to use the C11 standard
-CFLAGS = -I munit -std=c11
-
-# List all your C files here
-SRCS = main.c oxyobject.c munit/munit.c
-
-# The name of the output executable
-TARGET = tests
-
-all: $(TARGET)
-
-$(TARGET): $(SRCS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(SRCS)
+test_ref: reference_counted_gc/test.c
+	cd reference_counted_gc && gcc -std=c11 test.c oxy_object.c ../munit/munit.c -o test_ref && ./test_ref
 
 clean:
-	rm -f $(TARGET)
+	rm reference_counted_gc/test_ref
