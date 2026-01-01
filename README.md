@@ -9,9 +9,6 @@ garbage-collection strategies for a tiny object system named "oxy":
 It also includes a tiny dynamic `stack` helper and a bundled copy of
 the `µnit` test framework under `munit/` (used by the reference-counted tests).
 
-Use this README as a quick reference for the project layout, how to build
-the provided examples/tests, and known issues I discovered while reading the code.
-
 Overview
 --------
 You can explore and study both GC strategies in this project. Each strategy
