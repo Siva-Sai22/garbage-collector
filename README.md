@@ -1,4 +1,4 @@
-# Garbage Collector Examples (oxy)
+# Garbage Collector
 
 This repository contains small C implementations demonstrating two different
 garbage-collection strategies for a tiny object system named "oxy":
